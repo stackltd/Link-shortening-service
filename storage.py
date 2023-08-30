@@ -1,7 +1,9 @@
 import random
 import json
 
-from regex import *
+import pprint
+
+from regex import short_address, pseudo_home_page, home_page
 from url_request import check_page
 
 ALPH = 'abcdefghijklmnopqrstuvwxyz'
@@ -26,15 +28,15 @@ def shorts_json_maker(url_in: str) -> str:
     values = list(shorts.values())
     if keys:
         if url_in in values:
-            ind = values.index(url_in)
-            short_name = keys[ind]
+            index = values.index(url_in)
+            short_name = keys[index]
             print('Данный url уже зарегистрирован')
         else:
             while True:
                 token = __token_gen()
+                short_name = short_address(url=url_in, token=token)
                 # проверяем, что сгенерированного токена нет в базе
-                if token not in keys:
-                    short_name = short_address(url=url_in, token=token)
+                if short_name not in keys:
                     shorts.update({short_name: url_in})
                     with open(f'dumps/shorts.json', 'w', encoding='utf-8') as file:
                         json.dump(shorts, file, indent=4, ensure_ascii=False)
@@ -95,14 +97,31 @@ def home_pages_from_pseudo(pseudo: str) -> None:
         pseudo_names: dict = json.load(file)
         if pseudo in pseudo_names.keys():
             urls_list = pseudo_names[pseudo]
-            nubm_address = len(urls_list)
-            print('Найдено адресов:', nubm_address)
-            for ind, url in enumerate(urls_list):
-                if nubm_address > 1:
-                    print(f'Адрес {ind + 1}:')
+            nubmer_address = len(urls_list)
+            print('Найдено адресов:', nubmer_address)
+            for index, url in enumerate(urls_list):
+                if nubmer_address > 1:
+                    print(f'Адрес {index + 1}:')
                 print('Стандартный интернет-адрес: ', url)
                 print('Псевдоним домашней страницы интернет-адреса:', pseudo)
                 code_response = check_page(url)
                 print('Код ответа:', code_response)
         else:
             print('Адрес домашней страницы не найден')
+
+
+def print_database():
+    print('Псевдонимы:')
+    with open('dumps/pseudonames.json', 'r', encoding='utf-8') as file:
+        pseudo_names: dict = json.load(file)
+        if pseudo_names:
+            pprint.pprint(pseudo_names)
+        else:
+            print('Нет данных')
+    print('\nКороткие интернет-адреса:')
+    with open('dumps/shorts.json', 'r', encoding='utf-8') as file:
+        shorts: dict = json.load(file)
+        if shorts:
+            pprint.pprint(shorts)
+        else:
+            print('Нет данных')

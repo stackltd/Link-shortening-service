@@ -1,9 +1,7 @@
-import pprint
-
-from storage import *
-from regex import *
+from storage import shorts_json_maker, home_pages_from_pseudo, url_from_token, print_database
+from regex import pseudo_home_page
 from url_request import check_page
-from messages import *
+from messages import main_menu
 
 
 def main():
@@ -33,14 +31,7 @@ def main():
                 code_response = check_page(url=source_url)
                 print('Код ответа:', code_response)
         elif ask == '4':
-            print('Псевдонимы:')
-            with open('dumps/pseudonames.json', 'r', encoding='utf-8') as file:
-                pseudo_names: dict = json.load(file)
-                pprint.pprint(pseudo_names)
-            print('\n\nКороткие интернет-адреса:')
-            with open('dumps/shorts.json', 'r', encoding='utf-8') as file:
-                shorts: dict = json.load(file)
-                pprint.pprint(shorts)
+            print_database()
         elif ask == '5':
             print('Программа завершена')
             break
